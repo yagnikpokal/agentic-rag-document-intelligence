@@ -1,0 +1,31 @@
+You are required to develop a document search platform with an Agentic RAG backend that exposes REST APIs for integration with a frontend built using OpenWebUI.
+
+OpenWebUI will provide the chat-based interface for user interaction. Your responsibility will be to develop and integrate the custom backend with the OpenWebUI frontend.
+
+Backend Requirements
+Ingest the provided PDF documents and use them as the system’s knowledge base. The documents are available in the shared Google Drive folder.
+Implement a complete ingestion workflow covering document preprocessing, splitting, vectorization, and indexing.
+Develop a retrieval workflow using a contextual Agentic RAG pipeline.
+Implement tracing for all inference calls.
+Ensure that prompts are externalized and can be managed independently of the application code.
+Evaluate the accuracy and performance of the RAG pipeline.
+Mandatory Tools and Frameworks
+Docling: Document preprocessing
+PostgreSQL with PGVector: Vector database
+LlamaIndex: RAG implementation
+CrewAI: Multi-agent implementation
+Ollama: Local or remote LLM provider
+Arize Phoenix: PromptOps, inference tracing, debugging, and observability
+RAGAs: RAG evaluation
+OpenWebUI: Frontend application
+You may also use additional tools or frameworks where appropriate.
+
+Expected Deliverables
+A GitHub repository containing the complete source code on the master/default branch
+A detailed README.md containing setup, configuration, and deployment instructions
+References in the README to supplementary documentation stored in the /doc directory
+Supporting technical documents, including:
+Solution architecture and design diagrams
+Presentation deck
+Other relevant implementation documents
+Complete REST API documentation in Swagger/OpenAPI format

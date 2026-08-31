@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Document Search Platform — Technical Assessment</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #f4f1ea;
+      color: #1f1d1a;
+    }
+    .slide {
+      min-height: 100vh;
+      padding: 72px 96px;
+      border-bottom: 1px solid #d9d2c5;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    h1 { font-size: 42px; font-weight: 650; margin: 0 0 12px; letter-spacing: -0.03em; }
+    h2 { font-size: 28px; font-weight: 650; margin: 0 0 20px; letter-spacing: -0.02em; }
+    .kicker { text-transform: uppercase; letter-spacing: 0.12em; font-size: 12px; color: #6b6458; margin-bottom: 16px; }
+    p, li { font-size: 18px; line-height: 1.5; }
+    ul { margin: 0; padding-left: 22px; }
+    li { margin-bottom: 8px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; background: #ece7dc; padding: 1px 6px; }
+    table { border-collapse: collapse; width: 100%; font-size: 16px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #d9d2c5; vertical-align: top; }
+    th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #6b6458; }
+    .muted { color: #6b6458; }
+    nav {
+      position: sticky; top: 0; background: #f4f1ea; border-bottom: 1px solid #d9d2c5;
+      padding: 10px 24px; font-size: 13px; display: flex; gap: 16px; z-index: 2;
+    }
+    nav a { color: #1f1d1a; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#s1">Title</a>
+    <a href="#s2">Problem</a>
+    <a href="#s3">Stack</a>
+    <a href="#s4">Ingest</a>
+    <a href="#s5">Agents</a>
+    <a href="#s6">API</a>
+    <a href="#s7">Ops</a>
+    <a href="#s8">Demo</a>
+  </nav>
+
+  <section class="slide" id="s1">
+    <div class="kicker">Technical assessment</div>
+    <h1>Document Search Platform</h1>
+    <p>Agentic RAG backend for OpenWebUI — Docling, pgvector, LlamaIndex, CrewAI, Ollama, Phoenix, RAGAs.</p>
+    <p class="muted">Local-first. Python + uv. REST + OpenAI-compatible chat.</p>
+  </section>
+
+  <section class="slide" id="s2">
+    <h2>What we were asked to build</h2>
+    <div class="grid">
+      <ul>
+        <li>Ingest provided PDFs into a knowledge base</li>
+        <li>Full preprocessing → split → vectorize → index path</li>
+        <li>Contextual agentic RAG retrieval</li>
+        <li>Trace every inference call</li>
+      </ul>
+      <ul>
+        <li>Prompts outside application code</li>
+        <li>Measure accuracy and performance</li>
+        <li>REST APIs for an OpenWebUI frontend</li>
+        <li>Architecture, deck, OpenAPI, README</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="slide" id="s3">
+    <h2>Mandatory stack — mapped 1:1</h2>
+    <table>
+      <tr><th>Requirement</th><th>Implementation</th></tr>
+      <tr><td>Docling</td><td>DocumentConverter + HybridChunker at ingest</td></tr>
+      <tr><td>PostgreSQL + pgvector</td><td>Docker image <code>pgvector/pgvector:pg16</code>, HNSW cosine</td></tr>
+      <tr><td>LlamaIndex</td><td>PGVectorStore, hybrid retriever, Ollama LLM/embeddings</td></tr>
+      <tr><td>CrewAI</td><td>Planner, retriever, synthesizer, critic sequential crew</td></tr>
+      <tr><td>Ollama</td><td><code>llama3.2</code> + <code>nomic-embed-text</code></td></tr>
+      <tr><td>Arize Phoenix</td><td>OTLP traces + OpenInference instrumentors</td></tr>
+      <tr><td>RAGAs</td><td><code>POST /api/v1/evaluate</code> and <code>scripts/evaluate.py</code></td></tr>
+      <tr><td>OpenWebUI</td><td>OpenAI-compatible <code>/v1/chat/completions</code></td></tr>
+    </table>
+  </section>
+
+  <section class="slide" id="s4">
+    <h2>Ingestion</h2>
+    <ul>
+      <li>PDFs in <code>data/pdfs</code> (sample AetherCorp corpus ships with the repo)</li>
+      <li>Docling structure-aware chunks, not naive page splits</li>
+      <li>Optional contextual prefixes from <code>prompts/contextualize.yaml</code></li>
+      <li>768-d embeddings into pgvector with hybrid keyword search</li>
+      <li>Catalog table <code>ingested_documents</code> for status in the API</li>
+    </ul>
+  </section>
+
+  <section class="slide" id="s5">
+    <h2>Contextual agentic RAG</h2>
+    <ol>
+      <li><strong>Planner</strong> — rewrite follow-ups using chat history</li>
+      <li><strong>Retriever</strong> — 1–3 queries, LlamaIndex hybrid search</li>
+      <li><strong>Synthesizer</strong> — answer only from context, cite files</li>
+      <li><strong>Critic</strong> — JSON faithfulness; one revision loop</li>
+    </ol>
+    <p class="muted">Prompts are YAML. Edit <code>prompts/</code> without touching Python. Phoenix records each LLM span.</p>
+  </section>
+
+  <section class="slide" id="s6">
+    <h2>Integration surface</h2>
+    <table>
+      <tr><th>Client</th><th>Endpoint</th></tr>
+      <tr><td>OpenWebUI</td><td><code>GET /v1/models</code>, <code>POST /v1/chat/completions</code> (SSE)</td></tr>
+      <tr><td>Operators</td><td><code>POST /api/v1/ingest</code>, upload, documents</td></tr>
+      <tr><td>Developers</td><td><code>POST /api/v1/query</code> agentic | direct</td></tr>
+      <tr><td>Reviewers</td><td>Swagger <code>/docs</code>, Phoenix <code>:6006</code>, RAGAs evaluate</td></tr>
+    </table>
+  </section>
+
+  <section class="slide" id="s7">
+    <h2>Accuracy and performance</h2>
+    <ul>
+      <li>Golden set: 8 questions grounded in the sample PDFs</li>
+      <li>Metrics: RAGAs faithfulness, relevancy, context precision/recall</li>
+      <li>Always-on: lexical hit-rate, average and p95 latency</li>
+      <li>Health: Postgres, Ollama, Phoenix independently reported</li>
+    </ul>
+  </section>
+
+  <section class="slide" id="s8">
+    <h2>Local demo path</h2>
+    <ol>
+      <li><code>uv sync --all-extras</code> and <code>docker compose up -d</code></li>
+      <li><code>ollama pull llama3.2 nomic-embed-text</code></li>
+      <li><code>uv run python scripts/ingest.py</code></li>
+      <li><code>uv run uvicorn docsearch.main:app --port 8000 --reload</code></li>
+      <li>Open http://localhost:3000 — model <code>docsearch-agentic</code></li>
+      <li>Ask: “How many PTO days do full-time AetherCorp employees receive?”</li>
+    </ol>
+    <p class="muted">Details: README.md · doc/architecture.md · doc/design.md · doc/openapi.yaml</p>
+  </section>
+</body>
+</html>

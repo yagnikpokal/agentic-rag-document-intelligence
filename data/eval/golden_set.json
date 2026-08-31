@@ -1,0 +1,34 @@
+[
+  {
+    "question": "How many PTO days do full-time AetherCorp employees receive?",
+    "ground_truth": "Full-time employees receive 20 days of paid time off each calendar year."
+  },
+  {
+    "question": "Which weekdays are required in-office under the hybrid policy?",
+    "ground_truth": "Employees must be in a company office Tuesday through Thursday."
+  },
+  {
+    "question": "What is the monthly price of the Nimbus Team edition?",
+    "ground_truth": "Team is 129 USD per user per month."
+  },
+  {
+    "question": "What is the Enterprise uptime SLA for Nimbus?",
+    "ground_truth": "Enterprise uptime target is 99.9%."
+  },
+  {
+    "question": "What is the default git branch at AetherCorp?",
+    "ground_truth": "The default branch is main."
+  },
+  {
+    "question": "Where are production RAG embeddings stored?",
+    "ground_truth": "Production RAG services store embeddings in PostgreSQL with pgvector."
+  },
+  {
+    "question": "How quickly must Enterprise P1 incidents be acknowledged?",
+    "ground_truth": "P1 incidents are acknowledged within 15 minutes for Enterprise customers."
+  },
+  {
+    "question": "What is the default self-hosted model used for customer content?",
+    "ground_truth": "The default deployment uses a self-hosted Ollama model named llama3.2."
+  }
+]

@@ -1,0 +1,11 @@
+name: direct_rag
+version: "1.0"
+system: >
+  You answer questions using retrieved document context only.
+template: |
+  Question: {query}
+
+  Context:
+  {context}
+
+  Answer using only the context. If unknown, say so. List sources at the end.

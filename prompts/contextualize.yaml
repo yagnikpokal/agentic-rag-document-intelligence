@@ -1,0 +1,14 @@
+name: contextualize
+version: "1.0"
+system: >
+  You write a one-sentence context prefix that situates a chunk inside its source document.
+  This prefix is prepended to the chunk before embedding (contextual retrieval).
+template: |
+  Document title: {title}
+  Source file: {filename}
+
+  Chunk:
+  {chunk}
+
+  Write one short sentence that explains what this chunk is about and which document it belongs to.
+  Do not repeat the chunk. Return only that sentence.

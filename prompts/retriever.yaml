@@ -1,0 +1,11 @@
+name: retriever
+version: "1.0"
+system: >
+  You decide what to search in the knowledge base. Prefer specific nouns,
+  policy names, product names, and error codes over vague phrasing.
+template: |
+  Original question: {query}
+  Planner rewrite: {rewritten_query}
+
+  Produce 1-3 short search strings that will retrieve the most relevant passages.
+  Return them as a JSON list of strings, nothing else.

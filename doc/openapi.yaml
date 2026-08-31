@@ -1,0 +1,309 @@
+openapi: 3.0.3
+info:
+  title: Document Search Platform
+  version: "1.0.0"
+  description: |
+    Agentic RAG backend for OpenWebUI. Ingests PDFs with Docling, indexes them
+    in PostgreSQL/pgvector via LlamaIndex, answers with CrewAI agents, traces
+    inference in Arize Phoenix, and evaluates with RAGAs.
+servers:
+  - url: http://localhost:8000
+    description: Local development
+paths:
+  /api/v1/health:
+    get:
+      tags: [platform]
+      summary: Liveness and dependency checks
+      responses:
+        "200":
+          description: Aggregated health
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /api/v1/ready:
+    get:
+      tags: [platform]
+      summary: Readiness (same checks as health)
+      responses:
+        "200":
+          description: Readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /api/v1/prompts:
+    get:
+      tags: [platform]
+      summary: List externalized prompts
+      responses:
+        "200":
+          description: Prompt catalog without full template bodies in the index
+  /api/v1/prompts/{name}:
+    get:
+      tags: [platform]
+      summary: Fetch a YAML prompt including template
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Prompt spec
+        "404":
+          description: Unknown prompt
+  /api/v1/ingest:
+    post:
+      tags: [ingestion]
+      summary: Ingest PDFs from data/pdfs or a given directory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IngestRequest"
+      responses:
+        "200":
+          description: Ingestion summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IngestResponse"
+  /api/v1/ingest/upload:
+    post:
+      tags: [ingestion]
+      summary: Upload and index PDF files
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          description: Ingestion summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IngestResponse"
+  /api/v1/documents:
+    get:
+      tags: [ingestion]
+      summary: List ingested documents
+      responses:
+        "200":
+          description: Catalog rows
+  /api/v1/documents/{filename}:
+    delete:
+      tags: [ingestion]
+      summary: Remove a catalog row (vectors for that file remain until reindex/reset)
+      parameters:
+        - in: path
+          name: filename
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+        "404":
+          description: Not found
+  /api/v1/query:
+    post:
+      tags: [rag]
+      summary: Run agentic or direct RAG
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryRequest"
+            example:
+              question: How many PTO days do full-time AetherCorp employees receive?
+              mode: agentic
+      responses:
+        "200":
+          description: Answer plus citations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryResponse"
+  /api/v1/evaluate:
+    post:
+      tags: [evaluation]
+      summary: Run RAGAs plus latency on the golden set
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvalRequest"
+      responses:
+        "200":
+          description: Scores and per-question previews
+  /v1/models:
+    get:
+      tags: [openai-compatible]
+      summary: OpenWebUI model list
+      responses:
+        "200":
+          description: Models
+          content:
+            application/json:
+              example:
+                object: list
+                data:
+                  - id: docsearch-agentic
+                    object: model
+                    owned_by: docsearch
+                  - id: docsearch-direct
+                    object: model
+                    owned_by: docsearch
+  /v1/chat/completions:
+    post:
+      tags: [openai-compatible]
+      summary: OpenAI-compatible chat (SSE when stream=true)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatCompletionRequest"
+      responses:
+        "200":
+          description: Chat completion or text/event-stream
+components:
+  schemas:
+    HealthComponent:
+      type: object
+      properties:
+        name:
+          type: string
+        ok:
+          type: boolean
+        detail:
+          type: string
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded, error]
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/HealthComponent"
+    IngestRequest:
+      type: object
+      properties:
+        source_dir:
+          type: string
+          nullable: true
+        contextual_enrichment:
+          type: boolean
+          nullable: true
+    IngestResponse:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            type: object
+        chunks_indexed:
+          type: integer
+        elapsed_seconds:
+          type: number
+    QueryRequest:
+      type: object
+      required: [question]
+      properties:
+        question:
+          type: string
+        chat_history:
+          type: array
+          items:
+            type: object
+        mode:
+          type: string
+          enum: [agentic, direct]
+          default: agentic
+        top_k:
+          type: integer
+          nullable: true
+    Citation:
+      type: object
+      properties:
+        filename:
+          type: string
+        page:
+          nullable: true
+        score:
+          type: number
+          nullable: true
+        snippet:
+          type: string
+    QueryResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+        rewritten_query:
+          type: string
+        citations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Citation"
+        critic:
+          type: object
+        latency_ms:
+          type: integer
+        mode:
+          type: string
+    EvalRequest:
+      type: object
+      properties:
+        dataset_path:
+          type: string
+          nullable: true
+        sample_size:
+          type: integer
+          nullable: true
+    ChatMessage:
+      type: object
+      required: [role]
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant, tool]
+        content:
+          type: string
+          nullable: true
+    ChatCompletionRequest:
+      type: object
+      required: [messages]
+      properties:
+        model:
+          type: string
+          default: docsearch-agentic
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatMessage"
+        stream:
+          type: boolean
+          default: false
+        temperature:
+          type: number
+          nullable: true
+tags:
+  - name: platform
+  - name: ingestion
+  - name: rag
+  - name: evaluation
+  - name: openai-compatible
