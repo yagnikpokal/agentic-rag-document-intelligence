@@ -9,18 +9,32 @@
 ## Screenshots data
 
 ### 1. Run Ingest
+<img width="1888" height="656" alt="image" src="https://github.com/user-attachments/assets/263ca3c5-3ad1-4fec-85fa-b9bc1230b524" />
+
 
 ### 2. Download models
+<img width="1888" height="428" alt="image" src="https://github.com/user-attachments/assets/9188b627-ad0c-4b4c-8889-73381f507ca0" />
+
 
 ### 3. Up container
+<img width="802" height="366" alt="image" src="https://github.com/user-attachments/assets/0e28b713-9365-468a-9c08-43c5be838464" />
+
 
 ### 4. Up Local services
+<img width="1874" height="366" alt="image" src="https://github.com/user-attachments/assets/4cb8b925-f490-41f1-a71d-70fd74682723" />
+
 
 ### 5. Phoenix dashboard
+<img width="2560" height="1288" alt="image" src="https://github.com/user-attachments/assets/9c204b44-92b0-4abe-a80f-e5e79d0dea89" />
+
 
 ### 6. Question 1
+<img width="2560" height="1098" alt="image" src="https://github.com/user-attachments/assets/71165135-e471-4704-b986-9195357def57" />
+
 
 ### 7. Question 2
+<img width="2560" height="874" alt="image" src="https://github.com/user-attachments/assets/dd293ebd-2639-40cf-9c37-3f944a007a49" />
+
 
 # Document Search Platform
 
