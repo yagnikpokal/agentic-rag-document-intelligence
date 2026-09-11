@@ -5,6 +5,9 @@
 `make models`, 
 `make ingest`, 
 `make api`
+## Questions asked
+<img width="1268" height="611" alt="image" src="https://github.com/user-attachments/assets/9a24b454-b417-4642-afb0-db89621f8176" />
+
 
 ## Screenshots data
 
