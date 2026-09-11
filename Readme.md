@@ -6,6 +6,7 @@
 `make ingest`, 
 `make api`
 ## Questions asked
+Added SOP Document in RAG systems and ask questions
 <img width="1268" height="611" alt="image" src="https://github.com/user-attachments/assets/9a24b454-b417-4642-afb0-db89621f8176" />
 
 
@@ -29,14 +30,6 @@
 
 ### 5. Phoenix dashboard
 <img width="2560" height="1288" alt="image" src="https://github.com/user-attachments/assets/9c204b44-92b0-4abe-a80f-e5e79d0dea89" />
-
-
-### 6. Question 1
-<img width="2560" height="1098" alt="image" src="https://github.com/user-attachments/assets/71165135-e471-4704-b986-9195357def57" />
-
-
-### 7. Question 2
-<img width="2560" height="874" alt="image" src="https://github.com/user-attachments/assets/dd293ebd-2639-40cf-9c37-3f944a007a49" />
 
 
 # Document Search Platform
