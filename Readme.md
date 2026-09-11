@@ -15,7 +15,8 @@ Added SOP Document in RAG systems and ask questions
 ## Screenshots data
 
 ### 1. Run Ingest
-<img width="1888" height="656" alt="image" src="https://github.com/user-attachments/assets/263ca3c5-3ad1-4fec-85fa-b9bc1230b524" />
+<img width="911" height="205" alt="image" src="https://github.com/user-attachments/assets/3e7547d1-ff67-4171-ad02-89aefbf137c8" />
+
 
 
 ### 2. Download models
